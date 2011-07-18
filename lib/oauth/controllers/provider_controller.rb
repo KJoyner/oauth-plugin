@@ -32,7 +32,7 @@ module OAuth
       end
 
       def token
-        @client_application = ClientApplication.find :first, :conditions => { :client_id => params[:client_id] }
+        @client_application = ClientApplication.find :first, :conditions => { :key => params[:client_id] }
         if @client_application.secret != params[:client_secret]
           oauth2_error "invalid_client"
           return
@@ -121,7 +121,7 @@ module OAuth
       end
 
       def oauth2_authorize_code
-        @client_application = ClientApplication.find :first, :conditions => { :client_id => params[:client_id] }
+        @client_application = ClientApplication.find :first, :conditions => { :key => params[:client_id] }
         if request.post?
           @redirect_url = URI.parse(params[:redirect_uri] || @client_application.callback_url)
           if user_authorizes_token?
@@ -151,7 +151,7 @@ module OAuth
       end
 
       def oauth2_authorize_token
-        @client_application = ClientApplication.find :first, :conditions => { :client_id =>  params[:client_id] }
+        @client_application = ClientApplication.find :first, :conditions => { :key =>  params[:client_id] }
         if request.post?
           @redirect_url = URI.parse(params[:redirect_uri] || @client_application.callback_url)
           if user_authorizes_token?
