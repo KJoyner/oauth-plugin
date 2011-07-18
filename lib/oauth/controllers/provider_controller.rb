@@ -32,7 +32,7 @@ module OAuth
       end
 
       def token
-        @client_application = ClientApplication.find_by_key! params[:client_id]
+        @client_application = ClientApplication.find :first, :conditions => { :client_id => params[:client_id] }
         if @client_application.secret != params[:client_secret]
           oauth2_error "invalid_client"
           return
@@ -50,7 +50,7 @@ module OAuth
 
       def authorize
         if params[:oauth_token]
-          @token = ::RequestToken.find_by_token! params[:oauth_token]
+          @token = ::RequestToken.find :first, :conditions => { :oauth_token => params[:oauth_token] }
           oauth1_authorize
         elsif ["code","token"].include?(params[:response_type]) # pick flow
           send "oauth2_authorize_#{params[:response_type]}"
@@ -60,7 +60,7 @@ module OAuth
       end
 
       def revoke
-        @token = current_user.tokens.find_by_token! params[:token]
+        @token = current_user.tokens.find :first, :conditions => { :token => params[:token] }
         if @token
           @token.invalidate!
           flash[:notice] = "You've revoked the token for #{@token.client_application.name}"
@@ -121,7 +121,7 @@ module OAuth
       end
 
       def oauth2_authorize_code
-        @client_application = ClientApplication.find_by_key params[:client_id]
+        @client_application = ClientApplication.find :first, :conditions => { :client_id => params[:client_id] }
         if request.post?
           @redirect_url = URI.parse(params[:redirect_uri] || @client_application.callback_url)
           if user_authorizes_token?
@@ -151,7 +151,7 @@ module OAuth
       end
 
       def oauth2_authorize_token
-        @client_application = ClientApplication.find_by_key params[:client_id]
+        @client_application = ClientApplication.find :first, :conditions => { :client_id =>  params[:client_id] }
         if request.post?
           @redirect_url = URI.parse(params[:redirect_uri] || @client_application.callback_url)
           if user_authorizes_token?
@@ -178,7 +178,7 @@ module OAuth
 
       # http://tools.ietf.org/html/draft-ietf-oauth-v2-08#section-4.1.1
       def oauth2_token_authorization_code
-        @verification_code =  @client_application.oauth2_verifiers.find_by_token params[:code]
+        @verification_code =  @client_application.oauth2_verifiers.find :first, :conditions => { :code => params[:code] }
         unless @verification_code
           oauth2_error
           return
