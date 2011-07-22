@@ -127,6 +127,7 @@ module OAuth
           if user_authorizes_token?
             @verification_code = Oauth2Verifier.create :client_application=>@client_application, :user=>current_user, :callback_url=>@redirect_url.to_s
 
+
             unless @redirect_url.to_s.blank?
               @redirect_url.query = @redirect_url.query.blank? ?
                                     "code=#{@verification_code.code}" :
@@ -178,7 +179,7 @@ module OAuth
 
       # http://tools.ietf.org/html/draft-ietf-oauth-v2-08#section-4.1.1
       def oauth2_token_authorization_code
-        @verification_code =  @client_application.oauth2_verifiers.find :first, :conditions => { :code => params[:code] }
+        @Verification_code =  @client_application.oauth2_verifiers.find :first, :conditions => { :token => params[:code] }
         unless @verification_code
           oauth2_error
           return
